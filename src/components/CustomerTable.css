@@ -1,0 +1,173 @@
+.customer-table-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  color: #2E86AB;
+}
+
+.table-header h3 {
+  font-size: 1.25rem;
+  color: #1f2937;
+  margin: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead {
+  background: #f9fafb;
+}
+
+.data-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid #f3f4f6;
+  transition: background-color 0.2s;
+}
+
+.data-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.data-table td {
+  padding: 1rem;
+  color: #1f2937;
+}
+
+.rank-cell {
+  text-align: center;
+}
+
+.rank-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.rank-badge.rank-1 {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+  color: #92400e;
+}
+
+.rank-badge.rank-2 {
+  background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+  color: #374151;
+}
+
+.rank-badge.rank-3 {
+  background: linear-gradient(135deg, #cd7f32 0%, #e8a87c 100%);
+  color: #ffffff;
+}
+
+.rank-badge.rank-4,
+.rank-badge.rank-5 {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.customer-id,
+.station-id {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+  color: #2E86AB;
+}
+
+.amount {
+  font-weight: 600;
+  color: #059669;
+}
+
+.segment-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.segment-badge.champions {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.segment-badge.loyal-customers {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.segment-badge.potential-loyalists {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.segment-badge.at-risk {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.segment-badge.cant-lose-them {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.segment-badge.lost {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.segment-badge.hibernating {
+  background: #fce7f3;
+  color: #831843;
+}
+
+.segment-badge.need-attention {
+  background: #fef3c7;
+  color: #78350f;
+}
+
+@media (max-width: 768px) {
+  .data-table {
+    font-size: 0.875rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .table-wrapper {
+    -webkit-overflow-scrolling: touch;
+  }
+}
