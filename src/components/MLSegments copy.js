@@ -39,6 +39,7 @@ const MLSegments = ({ startDate, endDate }) => {
     }
   };
 
+  // Fetch customers for a specific segment
   const fetchSegmentCustomers = async (segmentName) => {
     setLoadingCustomers(true);
     setSelectedSegment(segmentName);
@@ -66,145 +67,56 @@ const MLSegments = ({ startDate, endDate }) => {
     }
   };
 
+  // Customer Modal Component
   const CustomerListModal = () => {
     if (!modalOpen) return null;
 
-    const overlayStyle = {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.75)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 10000,
-      backdropFilter: 'blur(4px)'
-    };
-
-    const contentStyle = {
-      background: 'white',
-      borderRadius: '16px',
-      maxWidth: '900px',
-      width: '90%',
-      maxHeight: '85vh',
-      display: 'flex',
-      flexDirection: 'column',
-      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.4)',
-      overflow: 'hidden'
-    };
-
-    const headerStyle = {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: '1.5rem 2rem',
-      borderBottom: '2px solid #e5e7eb',
-      background: 'linear-gradient(to bottom, #f8fafc, #ffffff)',
-      flexShrink: 0
-    };
-
-    const tableWrapperStyle = {
-      overflowY: 'auto',
-      overflowX: 'hidden',
-      flex: 1,
-      maxHeight: 'calc(85vh - 250px)'
-    };
-
-    const tableStyle = {
-      width: '100%',
-      borderCollapse: 'collapse',
-      fontSize: '0.9rem'
-    };
-
-    const thStyle = {
-      padding: '1rem 1.5rem',
-      textAlign: 'left',
-      fontWeight: 700,
-      color: '#374151',
-      textTransform: 'uppercase',
-      fontSize: '0.75rem',
-      letterSpacing: '0.05em',
-      borderBottom: '2px solid #e5e7eb',
-      background: '#f9fafb',
-      position: 'sticky',
-      top: 0,
-      zIndex: 100
-    };
-
-    const tdStyle = {
-      padding: '1rem 1.5rem',
-      borderBottom: '1px solid #f3f4f6',
-      color: '#1f2937'
-    };
-
-    const footerStyle = {
-      padding: '1.5rem 2rem',
-      borderTop: '2px solid #e5e7eb',
-      background: 'linear-gradient(to top, #f8fafc, #ffffff)',
-      display: 'flex',
-      justifyContent: 'flex-end',
-      flexShrink: 0
-    };
-
     return (
-      <div style={overlayStyle} onClick={() => setModalOpen(false)}>
-        <div style={contentStyle} onClick={(e) => e.stopPropagation()}>
-          <div style={headerStyle}>
-            <h2 style={{ margin: 0, color: '#1f2937', fontSize: '1.5rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+      <div className="modal-overlay" onClick={() => setModalOpen(false)}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          {/* Header */}
+          <div className="modal-header">
+            <h2>
               <Users size={24} />
               {selectedSegment} - Customer List
             </h2>
             <button
               onClick={() => setModalOpen(false)}
-              style={{
-                background: '#f3f4f6',
-                border: 'none',
-                cursor: 'pointer',
-                color: '#6b7280',
-                padding: '0.5rem',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '36px',
-                height: '36px'
-              }}
+              className="modal-close-button"
             >
               <X size={24} />
             </button>
           </div>
 
+          {/* Loading state */}
           {loadingCustomers && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem', color: '#6b7280' }}>
+            <div className="modal-loading">
               <div className="spinner"></div>
-              <p style={{ margin: 0, fontSize: '1rem' }}>Loading customers...</p>
+              <p>Loading customers...</p>
             </div>
           )}
 
+          {/* Customer table */}
           {!loadingCustomers && segmentCustomers && segmentCustomers.length > 0 && (
             <>
-              <div style={{ padding: '1rem 2rem', background: '#f9fafb', borderBottom: '1px solid #e5e7eb', fontSize: '0.875rem', color: '#6b7280', flexShrink: 0 }}>
-                Showing <strong style={{ color: '#1f2937', fontWeight: 700 }}>{segmentCustomers.length}</strong> customers
+              <div className="modal-info">
+                Showing <strong>{segmentCustomers.length}</strong> customers
               </div>
-              <div style={tableWrapperStyle}>
-                <table style={tableStyle}>
+              <div className="modal-table-wrapper">
+                <table className="customer-table">
                   <thead>
                     <tr>
-                      <th style={thStyle}>Customer ID</th>
-                      <th style={thStyle}>Phone Number</th>
-                      <th style={thStyle}>Member Since</th>
+                      <th>Customer ID</th>
+                      <th>Phone Number</th>
+                      <th>Member Since</th>
                     </tr>
                   </thead>
                   <tbody>
                     {segmentCustomers.map((customer, index) => (
-                      <tr key={customer.motorcyclist_id} style={{ backgroundColor: index % 2 === 0 ? '#fafbfc' : 'white' }}>
-                        <td style={{ ...tdStyle, fontWeight: 600, color: '#3b82f6', fontSize: '0.95rem' }}>
-                          {customer.motorcyclist_id}
-                        </td>
-                        <td style={tdStyle}>{customer.payer_phone}</td>
-                        <td style={tdStyle}>
+                      <tr key={customer.motorcyclist_id}>
+                        <td><strong>{customer.motorcyclist_id}</strong></td>
+                        <td>{customer.motari_phone}</td>
+                        <td>
                           {customer.created_at !== 'N/A' 
                             ? new Date(customer.created_at).toLocaleDateString('en-US', {
                                 year: 'numeric',
@@ -221,37 +133,19 @@ const MLSegments = ({ startDate, endDate }) => {
             </>
           )}
 
+          {/* Empty state */}
           {!loadingCustomers && (!segmentCustomers || segmentCustomers.length === 0) && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem', color: '#9ca3af', gap: '1rem' }}>
-              <Users size={48} color="#9ca3af" />
-              <p style={{ margin: 0, fontSize: '1rem', color: '#6b7280' }}>No customers found in this segment</p>
+            <div className="modal-empty">
+              <Users size={48} color="#9CA3AF" />
+              <p>No customers found in this segment</p>
             </div>
           )}
 
-          <div style={footerStyle}>
+          {/* Close button */}
+          <div className="modal-footer">
             <button
               onClick={() => setModalOpen(false)}
-              style={{
-                padding: '0.75rem 2rem',
-                background: '#3b82f6',
-                color: 'white',
-                border: 'none',
-                borderRadius: '8px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-                boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)'
-              }}
-              onMouseOver={(e) => {
-                e.target.style.background = '#2563eb';
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.5)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.background = '#3b82f6';
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.3)';
-              }}
+              className="modal-close-btn"
             >
               Close
             </button>
@@ -436,6 +330,7 @@ const MLSegments = ({ startDate, endDate }) => {
         </div>
       </div>
 
+      {/* Render modal */}
       <CustomerListModal />
     </div>
   );
