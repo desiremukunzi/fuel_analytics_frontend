@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AlertTriangle, Shield, Activity } from 'lucide-react';
 import './MLAnomalies.css';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '${API_BASE_URL}';
 
 const MLAnomalies = ({ startDate, endDate }) => {
   const [anomaliesData, setAnomaliesData] = useState(null);

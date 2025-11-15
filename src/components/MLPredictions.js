@@ -3,7 +3,7 @@ import axios from 'axios';
 import { AlertTriangle, TrendingUp, Target, Zap, Activity } from 'lucide-react';
 import './MLPredictions.css';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = '${API_BASE_URL}';
 
 const MLPredictions = ({ startDate, endDate }) => {
   const [churnData, setChurnData] = useState(null);

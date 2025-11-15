@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns';
 import { 
   TrendingUp, 
-  TrendingDown, 
   Users, 
   DollarSign, 
   Activity,
   AlertTriangle,
   Calendar,
-  BarChart3
+  BarChart3,
+  LogOut,
+  Droplet
 } from 'lucide-react';
 import './App.css';
 import InsightsCard from './components/InsightsCard';
@@ -21,10 +22,15 @@ import ComparisonCard from './components/ComparisonCard';
 import MLPredictions from './components/MLPredictions';
 import MLSegments from './components/MLSegments';
 import MLAnomalies from './components/MLAnomalies';
+import Chatbot from './components/Chatbot';
+import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 
-const API_BASE_URL = 'http://localhost:8000';
+// Import API configuration
+import apiClient from './utils/api';
 
-function App() {
+// Dashboard Component (Main App Logic)
+function Dashboard() {
   const [insights, setInsights] = useState(null);
   const [visualizations, setVisualizations] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,13 +45,23 @@ function App() {
   // Active tab state
   const [activeTab, setActiveTab] = useState('overview');
 
-  // Fetch insights
-  const fetchInsights = async () => {
+  // Get user info
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  };
+
+  // Fetch insights - wrapped in useCallback to fix useEffect warning
+  const fetchInsights = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      let url = `${API_BASE_URL}/api/insights?`;
+      let url = `/api/insights?`;
       
       if (startDate && endDate) {
         url += `start_date=${format(startDate, 'yyyy-MM-dd')}&end_date=${format(endDate, 'yyyy-MM-dd')}`;
@@ -57,7 +73,7 @@ function App() {
         url += `&compare=true`;
       }
       
-      const response = await axios.get(url);
+      const response = await apiClient.get(url);
       setInsights(response.data);
     } catch (err) {
       setError(err.message);
@@ -65,29 +81,29 @@ function App() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [startDate, endDate, period, compare]);
 
-  // Fetch visualizations
-  const fetchVisualizations = async () => {
+  // Fetch visualizations - wrapped in useCallback
+  const fetchVisualizations = useCallback(async () => {
     try {
-      let url = `${API_BASE_URL}/api/visualizations?`;
+      let url = `/api/visualizations?`;
       
       if (startDate && endDate) {
         url += `start_date=${format(startDate, 'yyyy-MM-dd')}&end_date=${format(endDate, 'yyyy-MM-dd')}`;
       }
       
-      const response = await axios.get(url);
+      const response = await apiClient.get(url);
       setVisualizations(response.data);
     } catch (err) {
       console.error('Error fetching visualizations:', err);
     }
-  };
+  }, [startDate, endDate]);
 
   // Initial load
   useEffect(() => {
     fetchInsights();
     fetchVisualizations();
-  }, []);
+  }, [fetchInsights, fetchVisualizations]);
 
   // Refetch when date/period changes
   const handleApplyFilters = () => {
@@ -140,6 +156,17 @@ function App() {
           <div className="header-subtitle">
             Customer Analytics & Insights
           </div>
+        </div>
+        
+        {/* User Info & Logout */}
+        <div className="header-actions">
+          <div className="user-info">
+            <span className="user-name">👤 {user.username || 'Admin'}</span>
+          </div>
+          <button className="logout-button" onClick={handleLogout} title="Logout">
+            <LogOut size={20} />
+            Logout
+          </button>
         </div>
       </header>
 
@@ -291,7 +318,7 @@ function App() {
         {/* Overview Tab */}
         {activeTab === 'overview' && data && (
           <>
-            {/* Key Metrics */}
+            {/* Key Metrics - 5 Cards including Liters */}
             <div className="metrics-grid">
               <InsightsCard
                 title="Total Revenue"
@@ -322,6 +349,14 @@ function App() {
                 icon={<TrendingUp />}
                 color="#F77F00"
                 change={comparison?.changes?.avg_transaction_change}
+              />
+              {/* NEW: Total Liters Card */}
+              <InsightsCard
+                title="Total Liters"
+                value={`${(data.overview.total_liters_sold || 0).toLocaleString()} L`}
+                icon={<Droplet />}
+                color="#9B59B6"
+                subtitle="Fuel dispensed"
               />
             </div>
 
@@ -447,7 +482,38 @@ function App() {
       <footer className="app-footer">
         <p>Jalikoi Analytics Dashboard © 2025</p>
       </footer>
+
+      {/* Chatbot Component - IMPORTANT: This must be here to show chat icon */}
+      <Chatbot />
     </div>
+  );
+}
+
+// Main App Component with Routing
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Login Route */}
+        <Route path="/login" element={<Login />} />
+        
+        {/* Protected Dashboard Route */}
+        <Route 
+          path="/dashboard" 
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Redirect root to dashboard */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        
+        {/* Catch all - redirect to login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </Router>
   );
 }
 
